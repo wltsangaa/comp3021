@@ -25,7 +25,7 @@ public class Map {
      * This function instantiates and initializes cells, destTiles, crates to the correct map elements (the # char
      * means a wall, @ the player, . is unoccupied Tile, lowercase letter is crate on a Tile,
      * uppercase letter is an unoccupied DestTile).
-     *new commit
+     *
      * @param rows The number of rows in the map
      * @param cols The number of columns in the map
      * @param rep  The 2d char array read from the map text file
