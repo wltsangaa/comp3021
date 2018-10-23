@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="PA1_obfuscated">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/PA1 Obfuscated/PA1_obfuscated.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -12,7 +12,7 @@ import Map.Occupiable.Tile;
 import java.util.ArrayList;
 
 /**
- * A class holding a the 2D array of cells, representing the world map
+ * A class holding a the 2D array of cells, representing the world map sdfsdf
  */
 public class Map {
     private Cell[][] cells;
