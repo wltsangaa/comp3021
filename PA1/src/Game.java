@@ -27,6 +27,24 @@ public class Game {
      */
     public void loadMap(String filename) throws InvalidMapException {
         //TODO
+        File f = new File(filename);
+        try (Scanner reader = new Scanner(f)) {
+            numRows = reader.nextInt();
+            numCols = reader.nextInt();
+            reader.nextLine();
+
+            rep = new char[numRows][numCols];
+            for (int r = 0; r < numRows; r++) {
+                String row = reader.nextLine();
+                for (int c = 0; c < numCols; c++) {
+                    rep[r][c] = row.charAt(c);
+                }
+            }
+            m = new Map();
+            m.initialize(numRows, numCols, rep);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -36,7 +54,7 @@ public class Game {
      */
     public boolean isWin() {
         //TODO
-        return false; // You may also modify this line.
+        return m.getDestTiles().stream().allMatch(DestTile::isCompleted);
     }
 
     /**
@@ -46,7 +64,15 @@ public class Game {
      */
     public boolean isDeadlocked() {
         //TODO
-        return false; // You may also modify this line.
+        for (Crate c : m.getCrates()) {
+            boolean canMoveLR = m.isOccupiableAndNotOccupiedWithCrate(c.getR(), c.getC() - 1)
+                    && m.isOccupiableAndNotOccupiedWithCrate(c.getR(), c.getC() + 1);
+            boolean canMoveUD = m.isOccupiableAndNotOccupiedWithCrate(c.getR() - 1, c.getC()) &&
+                    m.isOccupiableAndNotOccupiedWithCrate(c.getR() + 1, c.getC());
+            if (canMoveLR || canMoveUD)
+                return false;
+        }
+        return true;
     }
 
     /**
@@ -54,7 +80,12 @@ public class Game {
      */
     public void display() {
         //TODO
-
+        for (int r = 0; r < numRows; r++) {
+            for (int c = 0; c < numCols; c++) {
+                System.out.print(m.getCells()[r][c].getRepresentation());
+            }
+            System.out.println();
+        }
     }
 
     /**
@@ -68,7 +99,23 @@ public class Game {
      */
     public boolean makeMove(char c) {
         //TODO
-        return false; // You may also modify this line.
+        boolean madeMove = false;
+        switch (c) {
+            case 'w':
+                madeMove = m.movePlayer(Map.Direction.UP);
+                break;
+            case 'a':
+                madeMove = m.movePlayer(Map.Direction.LEFT);
+                break;
+            case 's':
+                madeMove = m.movePlayer(Map.Direction.DOWN);
+                break;
+            case 'd':
+                madeMove = m.movePlayer(Map.Direction.RIGHT);
+                break;
+        }
+
+        return madeMove;
     }
 
 

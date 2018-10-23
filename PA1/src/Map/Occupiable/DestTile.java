@@ -24,6 +24,13 @@ public class DestTile extends Tile {
      */
     public boolean isCompleted() {
         //TODO
+        if(this.getOccupant().isPresent())
+        {
+            if(this.getOccupant().get() instanceof Crate)
+            {
+                return true;
+            }
+        }
         return false; // You may also modify this line.
     }
 
@@ -37,6 +44,11 @@ public class DestTile extends Tile {
     @Override
     public char getRepresentation() {
         //TODO
-        return ' '; // You may also modify this line.
+        if(super.getOccupant().isPresent())
+        return super.getRepresentation();
+        else
+            return destID;
+
+//If the DestTile has an occupant, return the occupant's representation. Otherwise, return the DestTile's own ID.
     }
 }

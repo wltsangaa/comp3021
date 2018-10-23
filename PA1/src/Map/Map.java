@@ -12,7 +12,7 @@ import Map.Occupiable.Tile;
 import java.util.ArrayList;
 
 /**
- * A class holding a the 2D array of cells, representing the world map sdfsdf
+ * A class holding a the 2D array of cells, representing the world map
  */
 public class Map {
     private Cell[][] cells;
@@ -33,8 +33,45 @@ public class Map {
      */
     public void initialize(int rows, int cols, char[][] rep) throws InvalidMapException {
         //TODO
+        System.out.println(rows);
+        System.out.println(cols);
+        cells = new Cell[rows][cols];
+        destTiles = new ArrayList<>();
+       crates = new ArrayList<>();
+        for (var r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (rep[r][c] == '.') {
+                    cells[r][c] = new Tile();
+                } else if (rep[r][c] == '#') {
+                    cells[r][c] = new Wall();
+                } else if (rep[r][c] == '@') {
+                    if (player == null) {
+                        cells[r][c] = new Tile();
+                        player = new Player(r, c);
+                        ((Tile) cells[r][c]).setOccupant(player);
+                    } else {
+                        throw new InvalidNumberOfPlayersException("player is greater than 1");
+                    }
+                } else {
+                    if (Character.isLetter(rep[r][c])) {
+                        if (Character.isLowerCase(rep[r][c])) {
+                            cells[r][c] = new Tile();
+                            var newCrate = new Crate(r, c, rep[r][c]);
+                            crates.add(newCrate);
+                            ((Tile) cells[r][c]).setOccupant(newCrate);
+                        } else if (Character.isUpperCase(rep[r][c])) {
+                            var newDestTile = new DestTile(rep[r][c]);
+                            destTiles.add(newDestTile);
+                            cells[r][c] = newDestTile;
+                        }
+                    } else {
+                        throw new UnknownElementException("It is a unknown character " + rep[r][c]);
+                    }
+                }
 
-    }
+
+
+    }}}
 
     public ArrayList<DestTile> getDestTiles() {
         return destTiles;
@@ -58,7 +95,46 @@ public class Map {
      */
     public boolean movePlayer(Direction d) {
         //TODO
-        return false; // You may also modify this line.
+        int curR = player.getR();
+        int curC = player.getC();
+
+        int newR = curR;
+        int newC = curC;
+
+        switch (d) {
+            case UP:
+                newR--;
+                break;
+            case DOWN:
+                newR++;
+                break;
+            case LEFT:
+                newC--;
+                break;
+            case RIGHT:
+                newC++;
+                break;
+        }
+
+        if (isValid(newR, newC)) {
+            if (isOccupiableAndNotOccupiedWithCrate(newR, newC)) {
+                ((Occupiable) cells[curR][curC]).removeOccupant();
+                ((Occupiable) cells[newR][newC]).setOccupant(player);
+                player.setPos(newR, newC);
+                return true;
+            } else if (cells[newR][newC] instanceof Occupiable) {
+                if (moveCrate((Crate) ((Occupiable) cells[newR][newC]).getOccupant().get(), d)) {
+                    ((Occupiable) cells[curR][curC]).removeOccupant();
+                    ((Occupiable) cells[newR][newC]).setOccupant(player);
+                    player.setPos(newR, newC);
+                    return true;
+                }
+            }
+        }
+        System.out.println("false movePlayer");
+        return false;
+
+
     }
 
     /**
@@ -71,7 +147,36 @@ public class Map {
      */
     private boolean moveCrate(Crate c, Direction d) {
         //TODO
-        return false; // You may also modify this line.
+        int curR = c.getR();
+        int curC = c.getC();
+
+        int newR = curR;
+        int newC = curC;
+
+        switch (d) {
+            case UP:
+                newR--;
+                break;
+            case DOWN:
+                newR++;
+                break;
+            case LEFT:
+                newC--;
+                break;
+            case RIGHT:
+                newC++;
+                break;
+        }
+
+        if (isOccupiableAndNotOccupiedWithCrate(newR, newC)) {
+            ((Occupiable) cells[curR][curC]).removeOccupant();
+            ((Occupiable) cells[newR][newC]).setOccupant(c);
+            c.setPos(newR, newC);
+            return true;
+        } else {
+            System.out.println("false moveCrate");
+            return false;
+        }
     }
 
     private boolean isValid(int r, int c) {
@@ -86,7 +191,13 @@ public class Map {
      */
     public boolean isOccupiableAndNotOccupiedWithCrate(int r, int c) {
         //TODO
-        return false; // You may also modify this line.
+        if (!isValid(r, c)) {
+            return false;
+        }
+
+        return cells[r][c] instanceof Occupiable &&
+                (!((Occupiable) cells[r][c]).getOccupant().isPresent()
+                        || !(((Occupiable) cells[r][c]).getOccupant().get() instanceof Crate));
     }
 
     public enum Direction {
